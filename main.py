@@ -5,6 +5,11 @@ import task as TaskLib
 import things
 from ConfigParser import SafeConfigParser
 
+  # update status: deleted, date, moved, notes, name
+  # one lists of task. each task has a catg. just if tasks doesn't contain this card add it.
+  # otherwise, update all of the tasks individ
+  # removes dependency on setup + services?
+
 config = SafeConfigParser()
 config.read('config.ini')
 
