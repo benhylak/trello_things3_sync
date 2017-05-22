@@ -10,14 +10,28 @@ from ConfigParser import SafeConfigParser
   # otherwise, update all of the tasks individ
   # removes dependency on setup + services?
 
+# future flow:
+
+# for each of my remote sources
+# update them
+
+# for any newly added in both, add them.
+# don't handle removal here tho
+
+# for each of my sync tasks
+# check mod date to see if info needs updating
+# if catg changed, move remote_tasks as appropriate
+# if remote is deleted (archived or in log), delete other remotes
+#           todo: handle cards from trello that have been legit deleted? or just don't do that?
+
 config = SafeConfigParser()
 config.read('config.ini')
 
-TRELLO_API_KEY = config.get('trello', 'api_key')
+TRELLO_API_KEY = config.get('trello', 'api_key')  #todo: pass these into the trello remote source
 TRELLO_TOKEN = config.get('trello', 'api_token')
 GTD_BOARD = config.get('trello', 'gtd_board')
 
-today_cache = {}
+today_cache = {}  #todo: change to just one cache for all sync tasks e
 later_cache = []
 completed_cache = []
 

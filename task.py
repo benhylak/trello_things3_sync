@@ -3,6 +3,8 @@ from datetime import datetime
 
 pattern = re.compile(r'(?P<description>.*?)\n\nid: (?P<id>.*?)\n.*', flags=re.DOTALL | re.MULTILINE)
 
+## todo: enum for list locations, map names to the enum in extending classes
+
 # Seems like the Python scripting bridge does not support enum
 # as they are non-introspectable types. We need to hardcode them
 # See: https://developer.apple.com/library/Mac/DOCUMENTATION/Cocoa/Conceptual/ScriptingBridgeConcepts/AboutScriptingBridge/AboutScriptingBridge.html
