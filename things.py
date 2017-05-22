@@ -22,6 +22,7 @@ def getInboxTasks():
 
     for raw_todo in inboxList.toDos():
         '''todo.setName_("Working! A lot!")'''
+
         if raw_todo.name().strip(): #not just whitespace
             todo = Task(todo=raw_todo)
         #print todo.description

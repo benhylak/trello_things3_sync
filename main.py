@@ -41,6 +41,7 @@ today_list = get_list_by_name(board, 'Today')
 def update_from_trello():
     for card in today_list.list_cards():
         if card.name not in today_cache:
+
             today_cache[card.name] = card
 
             task = TaskLib.Task()
