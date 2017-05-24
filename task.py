@@ -22,7 +22,7 @@ def getStatusString(id):
 class Task(object):
     """Represent a task"""
 
-    def __init__(self, todo=None, card=None):
+    def __init__(self):
         super(Task, self).__init__()
 
         self.id = ''
@@ -33,24 +33,3 @@ class Task(object):
         self.lastModifiedDate = ''
         self.todo = None
         self.modified = False
-
-        if card:
-            self.loadFromCard(card)
-
-        if todo:
-            self.loadFromTodo(todo)
-
-    def loadFromTodo(self, todo):
-        """ init from a Things todo"""
-
-        self.subject = todo.name()
-        self.status = getStatusString(todo.status())
-        self.activityDate = str(todo.dueDate())[:10] if todo.dueDate() else None
-
-        try:
-            self.lastModifiedDate = datetime.strptime(str(todo.modificationDate())[:-6], '%Y-%m-%d %H:%M:%S')
-        except:
-            print "Date error"
-
-    def loadFromCard(self, card):
-        """not implemented"""

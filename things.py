@@ -12,22 +12,6 @@ def hasTag(todo, tagName):
 
     return False
 
-def getInboxTasks():
-    """Get all the tasks from things inbox"""
-
-    inbox = []
-
-    for raw_todo in inboxList.toDos():
-        '''todo.setName_("Working! A lot!")'''
-
-        if raw_todo.name().strip(): #not just whitespace
-            todo = Task(todo=raw_todo)
-        #print todo.description
-            inbox.append(todo)
-        #print todo.subject
-
-    return inbox
-
 def addTodo(task):
     """Create a new todo in Things"""
     properties = None
