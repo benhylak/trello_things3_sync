@@ -1,9 +1,3 @@
-from task import Task
-from Foundation import *
-from ScriptingBridge import *
-import ScriptingBridge
-
-
 def hasTag(todo, tagName):
     """Check if the todo has a specific tag"""
     for tag in todo.tags():

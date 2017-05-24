@@ -2,9 +2,10 @@
 # remote source would be an object that has a bunch of remote tasks, handles new and deleted, assigning catgs, list names
 # remote tasks just call their source for an update as needed
 
-from remote_source import RemoteSource
+from task_sources.remote_source import RemoteSource
 from Foundation import *
 from ScriptingBridge import *
+import objc
 
 class ThingsSource(RemoteSource):
 
@@ -26,9 +27,10 @@ class ThingsSource(RemoteSource):
         for list in self.list_sources:
             for task in list.toDos():
                 if task.id() not in self._cache.keys(): # todo 1) change task attrib to name rather than subject
-                    self._cache[task.id()] = task
-                    self._newly_added.append(task)
-                    print "New task: " + task.name()
+                    if task.name() is not None :
+                        self._cache[task.id()] = task
+                        self._newly_added.append(task)
+                        print "New task: " + task.name()
 
                 self._seen_ids.append(task.id())
 

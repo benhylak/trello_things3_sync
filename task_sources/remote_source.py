@@ -1,5 +1,3 @@
-from remote_task import *
-
 class RemoteSource(object):
 
     def __init__(self):

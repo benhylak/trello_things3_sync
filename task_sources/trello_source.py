@@ -2,9 +2,9 @@
 # remote source would be an object that has a bunch of remote tasks, handles new and deleted, assigning catgs, list names
 # remote tasks just call their source for an update as needed
 
-from remote_source import RemoteSource
-
 import trello
+
+from task_sources.remote_source import RemoteSource
 
 class TrelloSource(RemoteSource):
 

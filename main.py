@@ -1,10 +1,10 @@
+import time
 from ConfigParser import SafeConfigParser
 
-from remote_task import RemoteTask
-from trello_source import *
-from things_source import ThingsSource
+from task_sources.things_source import ThingsSource
 
-import time
+from task_sources.trello_source import *
+from tasks.remote_task import RemoteTask
 
 if __name__ == "__main__":
 
