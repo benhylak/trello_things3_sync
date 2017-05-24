@@ -1,4 +1,9 @@
+from ConfigParser import SafeConfigParser
+
+from remote_task import RemoteTask
 from trello_source import *
+from things_source import ThingsSource
+
 import time
 
 if __name__ == "__main__":
@@ -10,15 +15,25 @@ if __name__ == "__main__":
     TRELLO_TOKEN = config.get('trello', 'api_token')
     GTD_BOARD = config.get('trello', 'gtd_board')
 
-    t_source = TrelloSource(TRELLO_API_KEY, TRELLO_TOKEN, GTD_BOARD)
+    trello_source = TrelloSource(TRELLO_API_KEY, TRELLO_TOKEN, GTD_BOARD)
+    things_source = ThingsSource()
+
     main_cache = []
 
     while(True):
-        t_source.update()
+        trello_source.update()
+        things_source.update()
 
+        for task in things_source._newly_added:
+            t = RemoteTask(task.id, task, things_source)
+            t.update()
 
-        for card in t_source._newly_added:
-            t = RemoteTask(card.id, card, t_source)
+            print t.subject
+
+            main_cache.append(t)
+
+        for card in trello_source._newly_added:
+            t = RemoteTask(card.id, card, trello_source)
             t.update()
 
             print t.subject

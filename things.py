@@ -3,10 +3,6 @@ from Foundation import *
 from ScriptingBridge import *
 import ScriptingBridge
 
-things =   SBApplication.applicationWithBundleIdentifier_("com.culturedcode.ThingsMac")
-inboxList = things.lists().objectWithName_('Inbox')
-todayList = things.lists().objectWithName_('Today')
-nextList = things.lists().objectWithName_('Upcoming')
 
 def hasTag(todo, tagName):
     """Check if the todo has a specific tag"""

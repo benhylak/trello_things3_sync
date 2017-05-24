@@ -18,7 +18,6 @@ class TrelloSource(RemoteSource):
         )
 
         self.board = self.client.get_board(Board_ID)
-        self.list_sources = []
 
         for list_name in ('Inbox', 'Today', 'This Week', 'Later', 'Someday'):
             self.list_sources.append(self.get_list_by_name(list_name))
@@ -46,7 +45,7 @@ class TrelloSource(RemoteSource):
                     self._newly_added.append(card)
                     print "New card: " + card.name
 
-                card._updated = True
+                self._seen_ids.append(card.id)
 
         RemoteSource._post_update_(self) # call after update
 
