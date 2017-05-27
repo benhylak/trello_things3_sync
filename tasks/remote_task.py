@@ -11,7 +11,10 @@ class RemoteTask(Task):
         id = result[0]
         data = result[1]
 
-        return RemoteTask(id, data, remote_source)
+        newTask = remote_source.add_to_cache(id, data)
+
+        print "Created new from task "
+        return newTask
 
     def __init__(self, id, data, remote_source):
         '''inits the remote task from an object representing some remote source'''

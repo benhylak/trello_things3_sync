@@ -3,6 +3,7 @@
 # remote tasks just call their source for an update as needed
 
 import trello
+import pytz
 
 from task_sources.remote_source import RemoteSource
 
@@ -46,6 +47,7 @@ class TrelloSource(RemoteSource):
                     if card.id not in self._cache.keys():
                         remote_task = self.add_to_cache(card.id, card)
                         print "New task: " + remote_task.name  # todo 2) save list names somehow, or check what it belongs to? main cache doesn't work?
+                        self._newly_added.append(remote_task)
 
                     else:
                         remote_task = self._cache[card.id]
@@ -84,7 +86,7 @@ class TrelloSource(RemoteSource):
         remote_task._uid = card.id
         remote_task.name = card.name
         remote_task.notes = card.description
-        remote_task.due_date = card.due_date
-        remote_task.lastModifiedDate = card.date_last_activity.time()
+        remote_task.due_date = self.convert_date_for_py(card.due_date)
+        remote_task.lastModifiedDate = self.convert_date_for_py(card.date_last_activity)
 
         # todo tell remote task that this source was updated

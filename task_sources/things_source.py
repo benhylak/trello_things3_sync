@@ -9,6 +9,9 @@ from PyObjCTools import Conversion
 import objc
 from tasks.remote_task import RemoteTask
 import re
+import pytz
+
+import datetime
 
 class ThingsSource(RemoteSource):
 
@@ -40,11 +43,10 @@ class ThingsSource(RemoteSource):
                 if thing.name() is not None and len(thing.name()) > 0:
                     remote_task = None
 
-                    print thing.modificationDate()
-
                     if thing.id() not in self._cache.keys():
                         print "New task: " + str(thing.name)  # todo 2) save list names somehow, or check what it belongs to? main cache doesn't work?
                         remote_task = self.add_to_cache(thing.id(), thing)
+                        self._newly_added.append(remote_task)
 
                     else:
                         remote_task = self._cache[thing.id()]
@@ -66,8 +68,9 @@ class ThingsSource(RemoteSource):
         remote_task._uid = task.id()
         remote_task.name = task.name()
         remote_task.notes = task.notes()
-        remote_task.due_date = Conversion.pythonCollectionFromPropertyList(task.dueDate())
-        remote_task.lastModifiedDate =  Conversion.pythonCollectionFromPropertyList(task.modificationDate()).time()
+
+        remote_task.due_date = self.convert_date_for_py(task.dueDate())
+        remote_task.lastModifiedDate = self.convert_date_for_py(task.modificationDate())
 
         try:
             remote_task.state = self.list_to_state(self.parse_list_name(task))
@@ -79,21 +82,45 @@ class ThingsSource(RemoteSource):
         matchObj = re.search(r" Things3List \"(.*?)\" of", str(data))
         return matchObj.group(1)
 
+    def convert_date_for_py(self, date):
+        if date is not None:
+            date = Conversion.pythonCollectionFromPropertyList(date)
+            pst = pytz.timezone("US/Pacific")
+
+            date = RemoteSource.convert_date_for_py(self, pst.localize(date)) # normalizes utc
+
+        return date
+
+    def get_pending_task(self, list):
+        for todo in list.toDos():
+            for tag in todo.tags():
+                if tag.name() == 'Pending':
+                    todo.setTagNames_("")
+                    return todo
+                else:
+                    print "Tag: " + tag.name()
+
+            return False
+
     def add_task(self, task):
         '''Add a new task to the remote'''
-
         print "Adding new task"
 
+        ns_converted_date = task.lastModifiedDate
+
         properties = NSDictionary.dictionaryWithObjectsAndKeys_(task.name, 'name',
-                                                                task.notes, 'notes',
-                                                                task.lastModifiedDate, 'modificationDate'
-                                                                #   None)
-                                                                )
+                                                                Conversion.propertyListFromPythonCollection(ns_converted_date), 'modificationDate',
+                                                                'Pending', 'tagNames',
+                                                                task.notes, 'notes')
+
         todo = self._app.classForScriptingClass_('to do').alloc().initWithProperties_(properties)
         destination_list = self.get_list(self.status_to_names.get("Inbox")) #todo send proper state enum
         destination_list.toDos().addObject_(todo)
 
-        return id, todo
+        todo = self.get_pending_task(destination_list)
+
+        return todo.id(), todo
+
 
     def push_changes(self, task):
 

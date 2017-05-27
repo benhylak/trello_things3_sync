@@ -29,16 +29,25 @@ class Task(object):
         self.description = ''
         self.status = ''
         self.dueDate = ''
-        self.lastModifiedDate = datetime.time(0,0,0)
+        self.lastModifiedDate = None
         self.notes = None
 
         self.main_attributes = ('name', 'description', 'status', 'dueDate', 'lastModifiedDate', 'notes')
 
     def modified_later_than(self, task):
-        return self.lastModifiedDate > task.lastModifiedDate
+        if self.lastModifiedDate == None:
+            return False
+        elif task.lastModifiedDate ==None:
+            return True
+        else:
+            return self.lastModifiedDate > task.lastModifiedDate
 
     def set_attributes(self, task):
         '''sets most of the attributes of this task from another task (besides id)'''
 
         for attr_name in self.main_attributes:
             self.__setattr__(attr_name, task.__getattribute__(attr_name))
+
+        if self.dueDate == task.dueDate:
+            print "Due date set successfully"
+

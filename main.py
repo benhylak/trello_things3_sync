@@ -30,6 +30,8 @@ if __name__ == "__main__":
 
         print "Remote Source Update Finished"
 
+        print "Newly added: " + str(len(trello_source._newly_added))
+
         for task in trello_source._newly_added:
 
             task.update()

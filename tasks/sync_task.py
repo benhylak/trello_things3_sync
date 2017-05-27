@@ -45,6 +45,7 @@ class SyncTask(Task):
                 latestUpdate = remote_task
 
         if latestUpdate is not self:
+            print "New modification from {source}".format(source = type(latestUpdate._remote_source).__name__)
             self.update_from(latestUpdate)
             self.sync_changes()
 

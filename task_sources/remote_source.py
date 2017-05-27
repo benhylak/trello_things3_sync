@@ -1,4 +1,6 @@
 from tasks.remote_task import RemoteTask
+import pytz
+from pytz import timezone
 
 class RemoteSource(object):
 
@@ -18,6 +20,15 @@ class RemoteSource(object):
 
     #def add_new(self, task): #todo add function for adding to remote
        # new_card = RemoteTask("", self)
+
+    def convert_date_for_py(self, date):
+        if date is not None:
+            try:
+                date = pytz.utc.localize(date)
+            except:
+                pass
+
+        return date
 
     def _init_update_(self):
 
@@ -54,7 +65,7 @@ class RemoteSource(object):
 
         for id in to_delete:
             del self._cache[id]
-            print "Deleted " + id
+            print "Deleted " + str(id)
 
         for task in self._cache.values():
             self.process_task(task)
@@ -72,10 +83,9 @@ class RemoteSource(object):
         '''to implement'''
 
     def add_to_cache(self, id, data):
-  #      print "Adding {name} to cache".format(name=data.name)
 
         remote_task = RemoteTask(id, data, self)
         self._cache[id] = remote_task
-        self._newly_added.append(remote_task)
 
         return remote_task
+
