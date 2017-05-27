@@ -2,6 +2,7 @@ import time
 from ConfigParser import SafeConfigParser
 
 from task_sources.things_source import ThingsSource
+from tasks.sync_task import SyncTask
 
 from task_sources.trello_source import *
 from tasks.remote_task import RemoteTask
@@ -21,26 +22,25 @@ if __name__ == "__main__":
     main_cache = []
 
     while(True):
-        trello_source.update()
+
+        print "Here"
+
         things_source.update()
+        trello_source.update()
 
-        for task in things_source._newly_added:
-            t = RemoteTask(task.id, task, things_source)
-            t.update()
+        print "Remote Source Update Finished"
 
-            print t.subject
+        for task in trello_source._newly_added:
 
-            main_cache.append(t)
+            task.update()
 
-        for card in trello_source._newly_added:
-            t = RemoteTask(card.id, card, trello_source)
-            t.update()
+            things_task = RemoteTask.from_task(existing_task=task, remote_source=things_source)
 
-            print t.subject
+            sync_task = SyncTask(task, things_task)
 
-            main_cache.append(t)
+            main_cache.append(sync_task)
 
-        print len(main_cache)
-
+        for sync_task in main_cache:
+            sync_task.update()
 
         time.sleep(3)

@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+import datetime
 
 pattern = re.compile(r'(?P<description>.*?)\n\nid: (?P<id>.*?)\n.*', flags=re.DOTALL | re.MULTILINE)
 
@@ -23,13 +23,22 @@ class Task(object):
     """Represent a task"""
 
     def __init__(self):
-        super(Task, self).__init__()
 
         self.id = ''
-        self.subject = ''
+        self.name = ''
         self.description = ''
         self.status = ''
-        self.activityDate = ''
-        self.lastModifiedDate = ''
-        self.todo = None
-        self.modified = False
+        self.dueDate = ''
+        self.lastModifiedDate = datetime.time(0,0,0)
+        self.notes = None
+
+        self.main_attributes = ('name', 'description', 'status', 'dueDate', 'lastModifiedDate', 'notes')
+
+    def modified_later_than(self, task):
+        return self.lastModifiedDate > task.lastModifiedDate
+
+    def set_attributes(self, task):
+        '''sets most of the attributes of this task from another task (besides id)'''
+
+        for attr_name in self.main_attributes:
+            self.__setattr__(attr_name, task.__getattribute__(attr_name))

@@ -1,34 +1,52 @@
 from task import Task
+import datetime
 
 class SyncTask(Task):
 
     def __init__(self, *remotes):
         '''Init this task with all of the remote tasks'''
+        super(SyncTask, self).__init__()
         self.remote_tasks = []
-        self.remote_tasks += remotes
+
+        for arg in remotes:
+            print arg
+            self.remote_tasks.append(arg)
 
         for task in self.remote_tasks:
-            print # todo remote_tasks.a
+            print task.name
 
-    def use_attrs(self, task):
+        self.update()
+
+    def update_from(self, task):
         '''Use attributes: Takes all of the attributes from a different task and assigns them to self.'''
-        self.id = task.id
+        # self.id = task.id -- might make sense
         self.description = task.description
-        self.subject = task.subject
+        self.name = task.name
         self.lastModifiedDate = task.lastModifiedDate
 
         ## todo: fill out rest of attributes
 
-        #if classification changed, handle appropriately and send to both of my remotes. event goes h
-
-    def update(self):
-       ## todo: updating each task from remote (trello) may be more costly then together as a list
+    def sync_changes(self):
         for remote in self.remote_tasks:
-            remote.update()
+            remote.set_attributes(self)
+            remote.push_changes()
 
-            if remote.lastModifiedData > self.lastModifiedDate:
-                self.use_attrs(remote)
+    def update(self, fetch_latest = False):
+       ## todo: updating each task from remote (trello) may be more costly then together as a list
 
+        if fetch_latest:
+            for remote in self.remote_tasks:
+                remote.update()
+
+        latestUpdate = self
+
+        for remote_task in self.remote_tasks:
+            if remote_task.modified_later_than(latestUpdate):
+                latestUpdate = remote_task
+
+        if latestUpdate is not self:
+            self.update_from(latestUpdate)
+            self.sync_changes()
 
     def reset_updated(self):
         '''resets the updated flag on all of the remote tasks'''

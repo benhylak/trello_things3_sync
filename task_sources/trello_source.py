@@ -19,8 +19,8 @@ class TrelloSource(RemoteSource):
 
         self.board = self.client.get_board(Board_ID)
 
-        for list_name in ('Inbox', 'Today', 'This Week', 'Later', 'Someday'):
-            self.list_sources.append(self.get_list_by_name(list_name))
+        for list_name in ('Inbox', 'Today', 'Someday', 'Later', ):
+            self.list_sources[list_name] = self.get_list_by_name(list_name)
 
     def get_list_by_name(self, name, board=None):
 
@@ -32,13 +32,38 @@ class TrelloSource(RemoteSource):
 
     def update(self):
 
-        RemoteSource.update(self) # call before update, maybe good use for wrapper func
+        RemoteSource._init_update_(self) # call before update, maybe good use for wrapper func
 
-        for list in self.list_sources:
-            print "Fetched " + list.name
+        for list_name, list in self.list_sources.items():
+
+            print "Fetched " + list_name
             list.fetch()
 
-        for list in self.list_sources:
+            for card in list.list_cards():
+                if card.name is not None:
+                    remote_task = None
+
+                    if card.id not in self._cache.keys():
+                        remote_task = self.add_to_cache(card.id, card)
+                        print "New task: " + remote_task.name  # todo 2) save list names somehow, or check what it belongs to? main cache doesn't work?
+
+                    else:
+                        remote_task = self._cache[card.id]
+                        remote_task._data = card # updates the remote data it holds
+
+                    remote_task.remote_list_name = list_name  # update list name
+
+
+       # self._seen_ids_new = [card.id for list in self.list_sources.values()
+        #                          for card in list.list_cards()]
+
+#        self._newly_added_new = {card.id : card for list in self.list_sources.values()
+ #                                           for card in list.list_cards()
+  #                                          if card.id not in self._cache.keys()}
+
+   #     self._cache.update(self._newly_added)
+
+        for list in self.list_sources.values():
             for card in list.list_cards():
                 if card.id not in self._cache.keys():
                     self._cache[card.id] = card
@@ -57,9 +82,9 @@ class TrelloSource(RemoteSource):
             card.fetch()  # updates from remote
 
         remote_task._uid = card.id
-        remote_task.subject = card.name
+        remote_task.name = card.name
         remote_task.notes = card.description
         remote_task.due_date = card.due_date
-        remote_task.last_modified = card.date_last_activity
+        remote_task.lastModifiedDate = card.date_last_activity.time()
 
         # todo tell remote task that this source was updated
