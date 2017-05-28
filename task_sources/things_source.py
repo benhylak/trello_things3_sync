@@ -7,11 +7,8 @@ from Foundation import *
 from ScriptingBridge import *
 from PyObjCTools import Conversion
 import objc
-from tasks.remote_task import RemoteTask
 import re
 import pytz
-
-import datetime
 
 class ThingsSource(RemoteSource):
 
@@ -69,7 +66,9 @@ class ThingsSource(RemoteSource):
         remote_task.name = task.name()
         remote_task.notes = task.notes()
 
-        remote_task.due_date = self.convert_date_for_py(task.dueDate())
+        print "Things source date: " + str(task.dueDate())
+
+        remote_task.dueDate = self.convert_date_for_py(task.dueDate())
         remote_task.lastModifiedDate = self.convert_date_for_py(task.modificationDate())
 
         try:
@@ -78,7 +77,7 @@ class ThingsSource(RemoteSource):
             print "Thing Task has no list info yet... Will fix on next refresh"
 
     def parse_list_name(self, data):
-
+        '''Parses a list name from the objective c data. Newly created objects won't have this data'''
         matchObj = re.search(r" Things3List \"(.*?)\" of", str(data))
         return matchObj.group(1)
 
@@ -93,6 +92,8 @@ class ThingsSource(RemoteSource):
 
     def get_pending_task(self, list):
         for todo in list.toDos():
+            print todo.name()
+
             for tag in todo.tags():
                 if tag.name() == 'Pending':
                     todo.setTagNames_("")
@@ -100,24 +101,45 @@ class ThingsSource(RemoteSource):
                 else:
                     print "Tag: " + tag.name()
 
-            return False
+        return False
 
     def add_task(self, task):
         '''Add a new task to the remote'''
         print "Adding new task"
 
-        ns_converted_date = task.lastModifiedDate
 
         properties = NSDictionary.dictionaryWithObjectsAndKeys_(task.name, 'name',
-                                                                Conversion.propertyListFromPythonCollection(ns_converted_date), 'modificationDate',
+                                                                Conversion.propertyListFromPythonCollection(task.lastModifiedDate), 'modificationDate',
+                                                       #         Conversion.propertyListFromPythonCollection(task.dueDate), 'dueDate',
                                                                 'Pending', 'tagNames',
                                                                 task.notes, 'notes')
 
+
+        if task.dueDate is not None and type(task.dueDate) != str:
+            destination_list = self.get_list("Upcoming")
+            date_string = task.dueDate.strftime("%Y-%m-%d %H:%M:%S")
+            print date_string
+            date = NSDate.dateWithString_(date_string + " +0000")
+
+            properties = NSDictionary.dictionaryWithObjectsAndKeys_(task.name, 'name',
+                                                                    Conversion.propertyListFromPythonCollection(
+                                                                    task.lastModifiedDate), 'modificationDate',
+                                                                    date, 'dueDate',
+                                                                    'Pending', 'tagNames',
+                                                                    task.notes, 'notes')
+        else:
+            destination_list = self.get_list(self.status_to_names.get("Inbox")) #todo send proper state enum
+
         todo = self._app.classForScriptingClass_('to do').alloc().initWithProperties_(properties)
-        destination_list = self.get_list(self.status_to_names.get("Inbox")) #todo send proper state enum
+
         destination_list.toDos().addObject_(todo)
 
-        todo = self.get_pending_task(destination_list)
+        for destination_list in self.list_sources.values():
+            todo = self.get_pending_task(destination_list)
+
+            if todo:
+                break
+
 
         return todo.id(), todo
 
@@ -128,6 +150,6 @@ class ThingsSource(RemoteSource):
 
         thing.setName_(task.name)
         thing.setNotes_(task.notes)
-        thing.setDueDate_(task.due_date)
+        thing.setDueDate_(task.dueDate)
         thing.setModificationDate_(task.lastModifiedDate)
 

@@ -55,16 +55,6 @@ class TrelloSource(RemoteSource):
 
                     remote_task.remote_list_name = list_name  # update list name
 
-
-       # self._seen_ids_new = [card.id for list in self.list_sources.values()
-        #                          for card in list.list_cards()]
-
-#        self._newly_added_new = {card.id : card for list in self.list_sources.values()
- #                                           for card in list.list_cards()
-  #                                          if card.id not in self._cache.keys()}
-
-   #     self._cache.update(self._newly_added)
-
         for list in self.list_sources.values():
             for card in list.list_cards():
                 if card.id not in self._cache.keys():
@@ -86,7 +76,7 @@ class TrelloSource(RemoteSource):
         remote_task._uid = card.id
         remote_task.name = card.name
         remote_task.notes = card.description
-        remote_task.due_date = self.convert_date_for_py(card.due_date)
+        remote_task.dueDate = self.convert_date_for_py(card.due_date)
         remote_task.lastModifiedDate = self.convert_date_for_py(card.date_last_activity)
 
         # todo tell remote task that this source was updated

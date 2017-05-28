@@ -1,12 +1,7 @@
 import re
-import datetime
-
-pattern = re.compile(r'(?P<description>.*?)\n\nid: (?P<id>.*?)\n.*', flags=re.DOTALL | re.MULTILINE)
 
 ## todo: enum for list locations, map names to the enum in extending classes
 
-# Seems like the Python scripting bridge does not support enum
-# as they are non-introspectable types. We need to hardcode them
 # See: https://developer.apple.com/library/Mac/DOCUMENTATION/Cocoa/Conceptual/ScriptingBridgeConcepts/AboutScriptingBridge/AboutScriptingBridge.html
 status = {'Open': 1952737647, 'Completed': 1952736109, 'Cancelled': 1952736108}
 
@@ -18,17 +13,15 @@ def getStatusString(id):
 
     return ''
 
-
 class Task(object):
     """Represent a task"""
 
     def __init__(self):
-
         self.id = ''
         self.name = ''
         self.description = ''
         self.status = ''
-        self.dueDate = ''
+        self.dueDate = None
         self.lastModifiedDate = None
         self.notes = None
 

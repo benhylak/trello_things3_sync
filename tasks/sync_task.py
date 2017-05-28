@@ -1,5 +1,4 @@
 from task import Task
-import datetime
 
 class SyncTask(Task):
 
@@ -19,7 +18,7 @@ class SyncTask(Task):
 
     def update_from(self, task):
         '''Use attributes: Takes all of the attributes from a different task and assigns them to self.'''
-        # self.id = task.id -- might make sense
+
         self.description = task.description
         self.name = task.name
         self.lastModifiedDate = task.lastModifiedDate

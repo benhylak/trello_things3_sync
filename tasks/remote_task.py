@@ -44,8 +44,6 @@ class RemoteTask(Task):
             return other.id == self.id
         else:
             return False
-
-            #    return RemoteTask.__eq__(self, other)  # use base class equality
             # todo: determine if instance should be comp'd
 
 

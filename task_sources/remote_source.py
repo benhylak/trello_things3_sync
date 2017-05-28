@@ -1,6 +1,5 @@
 from tasks.remote_task import RemoteTask
 import pytz
-from pytz import timezone
 
 class RemoteSource(object):
 
