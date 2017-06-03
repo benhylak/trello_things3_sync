@@ -3,7 +3,7 @@ python:
   - "2.7"
 # command to install dependencies
 install:
-  - pip install -r reference/requirements.txt
+#  - pip install -r reference/requirements.txt
   - "pip install flake8"
 # command to run tests
 
