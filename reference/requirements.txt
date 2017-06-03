@@ -1,2 +1,2 @@
-py-trello
-pyobjc
+py-trello==0.9.0
+pyobjc==3.2.1
