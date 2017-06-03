@@ -8,20 +8,20 @@ class RemoteTask(Task):
     @staticmethod
     def from_task(existing_task, remote_source):
         result = remote_source.add_task(existing_task)
-        id = result[0]
+        task_id = result[0]
         data = result[1]
 
-        newTask = remote_source.add_to_cache(id, data)
+        new_task = remote_source.add_to_cache(task_id, data)
 
         print "Created new from task "
         return newTask
 
-    def __init__(self, id, data, remote_source):
+    def __init__(self, task_id, data, remote_source):
         '''inits the remote task from an object representing some remote source'''
         Task.__init__(self)
 
-        self._uid = id
-        self._remote_source = remote_source
+        self._uid = task_id
+        self.remote_source = remote_source
         self._data = data
 
         self.update(fetch=False)
@@ -31,11 +31,11 @@ class RemoteTask(Task):
 
     def update(self, fetch=False):
         '''Every remote updates differently.'''
-        '''For example, thing tasks don't know their list, so you have to check all of the lists for their uid to determine'''
-        self._remote_source.update_task(self, fetch=False)
+        '''For example, thing tasks don't know their list, so check all of the lists for their uid to determine'''
+        self.remote_source.update_task(self, fetch=False)
 
     def push_changes(self):
-        self._remote_source.push_changes(self)
+        self.remote_source.push_changes(self)
 
     def __eq__(self, other):
         if isinstance(other, Card):  # "raw" trello card, from py-trello class

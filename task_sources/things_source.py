@@ -1,6 +1,6 @@
 # todo make one file written per service. (remote source)
-# remote source would be an object that has a bunch of remote tasks, handles new and deleted, assigning catgs, list names
-# remote tasks just call their source for an update as needed
+# remote source would be an object that has a bunch of remote tasks, handles new and deleted, assigning catgs,
+# list names remote tasks just call their source for an update as needed
 
 from task_sources.remote_source import RemoteSource
 from Foundation import *
@@ -15,7 +15,6 @@ class ThingsSource(RemoteSource):
 
     def __init__(self):
         '''init'''
-
         self.names_to_status = {
             'Inbox': 'Inbox',
             'Today': 'Today',
@@ -33,10 +32,10 @@ class ThingsSource(RemoteSource):
 
     def update(self):
 
-        RemoteSource._init_update_(self) # call before update, maybe good use for wrapper func
+        RemoteSource._init_update_(self)  # call before update, maybe good use for wrapper func
 
-        for list_name, list in self.list_sources.items():
-            for thing in list.toDos():
+        for list_name, remote_list in self.list_sources.items():
+            for thing in remote_list.toDos():
                 if thing.name() is not None and len(thing.name()) > 0:
                     remote_task = None
 
@@ -52,7 +51,7 @@ class ThingsSource(RemoteSource):
                     remote_task.remote_list_name = list_name  # update list name
                     self.update_task(remote_task)
 
-                    self._seen_ids.append(thing.id()) ## could be replaced with attribute of remote task
+                    self._seen_ids.append(thing.id())  # could be replaced with attribute of remote task
 
         RemoteSource._post_update_(self) # call after update
 
@@ -76,22 +75,24 @@ class ThingsSource(RemoteSource):
         except:
             print "Thing Task has no list info yet... Will fix on next refresh"
 
-    def parse_list_name(self, data):
+    @staticmethod
+    def parse_list_name(data):
         '''Parses a list name from the objective c data. Newly created objects won't have this data'''
-        matchObj = re.search(r" Things3List \"(.*?)\" of", str(data))
-        return matchObj.group(1)
+        match_obj = re.search(r" Things3List \"(.*?)\" of", str(data))
+        return match_obj.group(1)
 
     def convert_date_for_py(self, date):
         if date is not None:
             date = Conversion.pythonCollectionFromPropertyList(date)
             pst = pytz.timezone("US/Pacific")
 
-            date = RemoteSource.convert_date_for_py(self, pst.localize(date)) # normalizes utc
+            date = RemoteSource.convert_date_for_py(self, pst.localize(date))  # normalizes utc
 
         return date
 
-    def get_pending_task(self, list):
-        for todo in list.toDos():
+    @staticmethod
+    def get_pending_task(source_list):
+        for todo in source_list.toDos():
             print todo.name()
 
             for tag in todo.tags():
@@ -107,13 +108,14 @@ class ThingsSource(RemoteSource):
         '''Add a new task to the remote'''
         print "Adding new task"
 
-
         properties = NSDictionary.dictionaryWithObjectsAndKeys_(task.name, 'name',
-                                                                Conversion.propertyListFromPythonCollection(task.lastModifiedDate), 'modificationDate',
-                                                       #         Conversion.propertyListFromPythonCollection(task.dueDate), 'dueDate',
+                                                                Conversion.
+                                                                propertyListFromPythonCollection(task.lastModifiedDate),
+                                                                                                'modificationDate',
                                                                 'Pending', 'tagNames',
                                                                 task.notes, 'notes')
 
+        #         Conversion.propertyListFromPythonCollection(task.dueDate), 'dueDate',
 
         if task.dueDate is not None and type(task.dueDate) != str:
             destination_list = self.get_list("Upcoming")

@@ -12,8 +12,8 @@ setup(
    author='Ben Hylak',
    author_email='bhylak@gmail.com',
    url="http://www.benhylak.com/",
-   packages=['trello_things3_sync'],  #same as name
-   install_requires=['py-trello', 'pyobjc'], #external packages as dependencies
+   packages=['trello_things3_sync'],  # same as name
+   install_requires=['py-trello', 'pyobjc'],  # external packages as dependencies
    scripts=[
             'scripts/cool',
             'scripts/skype',
