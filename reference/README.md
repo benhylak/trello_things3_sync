@@ -15,11 +15,17 @@ Config file holds all of your sensitive information. Keep this stuff secret!
 #### config.ini format: ####
 
 [trello]<br />
-api_key =  < your key here > <br />
+api_key = 5cdb53fb601586e2e96ef9a46a6791e4 <br />
 api_token = < your token here > <br />
 gtd_board = < board id here > <br />
 
-To authorize yourself + get your own key/token, see here: https://developers.trello.com/authorize
+Generate an API Key by going here: https://trello.com/app-key
+
+Then, get a token by clicking this link:
+
+https://trello.com/1/authorize?expiration=never&name=SinglePurposeToken&key=5cdb53fb601586e2e96ef9a46a6791e4
+
+Lastly, to find the id for your GTD board, press "W" and find the link to share your board. It should be in the format http://trello.com/b/<your board's id>
 
 ## Why I built this ##
 
